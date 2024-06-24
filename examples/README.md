@@ -3,8 +3,9 @@
 1. generate simple scene (one center + one obstacle)  
 blenderproc run examples/one2345.py -- --object_path "obstacle_object_path" --sub_object_path "center_object_path"
 
-subobject_path is center object path
-object_path is obstacle object path
+args 
+ - subobject_path : center object path  
+ - object_path : obstacle object path
 
 
 2. generate complex scene (one center + multiple obstacle)  
@@ -29,8 +30,9 @@ each hdf5 file have ...
 - cams
 
 
-each *_single data is rendered when obstacles was hided.
-segmap
+each *_single data is rendered when obstacles was hided.  
+
+segmap 
 - 0 : background
 - 1 : obstacle
 - 2 : center object
@@ -42,6 +44,7 @@ cams : same format with instant mesh
     - when f_x, f_y are focal length, c_x, c_y are principal point, l_x, l_y are length of image, ...
     - [ $\frac{f_x}{l_x} , \frac{f_y}{l_y} , \frac{c_x}{l_x} , \frac{c_y}{l_y}$]
 
+blender coordinate(InstantMesh coordinate)
 ![bldner coordinate](..//images/blender_coordinate.png)
 
 
