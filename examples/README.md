@@ -1,3 +1,14 @@
+# occlusion scene generate
+
+1. generate one center object and one obstacle scene
+blenderproc run examples/one2345.py -- --object_path "obstacle_object_path" --sub_object_path "center_object_path"
+
+subobject_path is center object path
+object_path is obstacle object path
+
+
+2. generate one
+
 # Examples overview
 
 We structure our examples into three different groups. We encourage everyone to start with the [basic examples](basics/README.md).
