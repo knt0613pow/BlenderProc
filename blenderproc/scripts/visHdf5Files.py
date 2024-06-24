@@ -10,15 +10,17 @@ import h5py
 import numpy as np
 from matplotlib import pyplot as plt
 
-default_rgb_keys = ["colors", "normals", "diffuse", "nocs"]
+default_rgb_keys = ["colors", "diffuse", "nocs", "colors_single"]
+default_noraml_keys = ["normals", "normals_single"]
+default_rgb_keys = default_rgb_keys + default_noraml_keys
 default_flow_keys = ["forward_flow", "backward_flow"]
-default_segmap_keys = ["segmap", ".*_segmaps"]
+default_segmap_keys = ["segmap", ".*_segmaps" , ".*_segmaps_single"]
 default_segcolormap_keys = ["segcolormap"]
-default_depth_keys = ["distance", "depth", "stereo-depth"]
+default_depth_keys = ["distance", "depth", "stereo-depth", "depth_single"]
 all_default_keys = default_rgb_keys + default_flow_keys + default_segmap_keys + default_segcolormap_keys + \
                    default_depth_keys
-default_depth_max = 20
-
+default_depth_max = 5
+default_depth_min = 2.0
 
 def flow_to_rgb(flow):
     """
@@ -58,7 +60,7 @@ def key_matches(key, patterns, return_index=False):
 
 
 def vis_data(key, data, full_hdf5_data=None, file_label="", rgb_keys=None, flow_keys=None, segmap_keys=None,
-             segcolormap_keys=None, depth_keys=None, depth_max=default_depth_max, save_to_file=None):
+             segcolormap_keys=None, depth_keys=None, depth_max=default_depth_max, save_to_file=None, depth_min = default_depth_min):
     """
     Visualize the data
     """
@@ -133,12 +135,11 @@ def vis_data(key, data, full_hdf5_data=None, file_label="", rgb_keys=None, flow_
                 print(f"Warning: The data with key '{key}' has more than one channel which would not allow using "
                       f"a jet color map. Therefore only the first channel is visualized.")
             data = data[:, :, 0]
-
         if save_to_file is None:
-            plt.imshow(data, cmap='summer', vmax=depth_max)
+            plt.imshow(data,cmap ="viridis", vmax=depth_max, vmin=depth_min)
             plt.colorbar()
         else:
-            plt.imsave(save_to_file, data, cmap='summer', vmax=depth_max)
+            plt.imsave(save_to_file, data, cmap='viridis', vmax=depth_max, vmin=depth_min)
             plt.close()
     elif key_matches(key, rgb_keys):
         if save_to_file is None:
@@ -191,7 +192,11 @@ def vis_file(path, keys_to_visualize=None, rgb_keys=None, flow_keys=None, segmap
                     print("Keys: " + ', '.join(res))
 
                 for key in keys:
-                    value = np.array(data[key])
+                    if key in default_noraml_keys:
+                        value = np.array(data[key]).astype(np.float32)
+                        value =  np.clip(value, 0.0,1.0)
+                    else :
+                        value = np.array(data[key])
                     if save_to_path is not None:
                         save_to_file = os.path.join(save_to_path,
                                                     str(os.path.basename(path)).split('.', maxsplit=1)[0] +

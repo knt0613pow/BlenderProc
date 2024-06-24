@@ -31,3 +31,8 @@ docs/source/images/
 docs/source/examples/
 docs/source/*md
 blenderproc_resources/
+
+views/*
+visualize_file/*
+thesis/*
+thesis_multiobj/*
