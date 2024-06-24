@@ -36,3 +36,7 @@ views/*
 visualize_file/*
 thesis/*
 thesis_multiobj/*
+
+generate_data*
+occlusion.txt
+objaverse_list.txt

@@ -1,13 +1,52 @@
 # occlusion scene generate
 
-1. generate one center object and one obstacle scene
+1. generate simple scene (one center + one obstacle)  
 blenderproc run examples/one2345.py -- --object_path "obstacle_object_path" --sub_object_path "center_object_path"
 
 subobject_path is center object path
 object_path is obstacle object path
 
 
-2. generate one
+2. generate complex scene (one center + multiple obstacle)  
+blenderproc run  examples/one2345_multiobject.py -- --obstacle_path "obsacle1" "obsacle2" ... "obsacle_n"  --center_path "center_object_path"
+
+output:  
+args.output_dir/"d"/"d".hdf5  
+args.output_dir/"d"/colors.png  
+args.output_dir/"d"/description.txt
+
+description txt file contain center object and obstacle objects path
+
+each hdf5 file have ...
+- colors
+- colors_single
+- depth
+- depth_single
+- normals
+- normals_single
+- instance_segmaps
+- instance_segmaps_single
+- cams
+
+
+each *_single data is rendered when obstacles was hided.
+segmap
+- 0 : background
+- 1 : obstacle
+- 2 : center object
+
+cams : same format with instant mesh
+- shape (16,1)
+- [:12, :] = flatten cam2world_matrix
+- [12:, :] = normalizaed instrinsic paramter 
+    - when f_x, f_y are focal length, c_x, c_y are principal point, l_x, l_y are length of image, ...
+    - [ $\frac{f_x}{l_x} , \frac{f_y}{l_y} , \frac{c_x}{l_x} , \frac{c_y}{l_y}$]
+
+![bldner coordinate](..//images/blender_coordinate.png)
+
+
+
+
 
 # Examples overview
 
