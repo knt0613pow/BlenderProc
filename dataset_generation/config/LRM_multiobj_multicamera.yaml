@@ -1,0 +1,77 @@
+# 4 EXPERIMENTS
+#  4.1 DATA
+
+#LRM relies on abundant 3D data from Objaverse (Deitke et al., 2023) and MVImgNet (Yu et al., 2023), 
+# consisting of synthetic 3D assets and videos of objects in the real world, respectively, to learn a generalizable cross-shape 3D prior.
+# For each 3D asset in Objaverse, we normalize the shape to the box [-1, 1]^3 in world space and render 32 random views 
+# with the same camera pointing toward the shape at arbitrary poses. The rendered images are of resolution 1024ˆ1024, 
+# and the camera poses are sampled from a ball of radius [1.5, 3.0] and with height in range [-0.75, 1.60]
+
+engine : "CYCLES"
+device : "GPU"
+file_format : "PNG"
+color_mode : "RGBA"
+output_type : "hdf5"
+naming : "center_obj"
+visualize : True
+# remove_obs : True
+
+output_dir : /root/data/LRM
+obj :
+  - 
+    type : "center"
+    normalize_type : "xyz" 
+    normalize_scale : 2.0
+    seg_id : 1
+  - 
+    type : "obs"
+    normalize_type : "xyz" 
+    normalize_scale : 2.0
+    seg_id : 1
+  - 
+    type : "obs"
+    normalize_type : "xyz" 
+    normalize_scale : 2.0
+    seg_id : 1
+
+obs_position : #  Only valid in multi-object scenes
+  dist : [1.6, 1.6]
+obj_path :
+  - "/dataset/Objaverse-LGM/hf-objaverse-v1/glbs/000-000/ff6c2c51f7b040279200f8154a376841.glb"
+  - "/dataset/Objaverse-LGM/hf-objaverse-v1/glbs/000-000/2d6fd25cbfa94efabaf4aa62f51965f1.glb"
+  - "/dataset/Objaverse-LGM/hf-objaverse-v1/glbs/000-000/2d6fd25cbfa94efabaf4aa62f51965f1.glb"
+
+
+camera :
+  - 
+    dist : [1.5, 3.0]
+    first_cam_front : False
+    first_cam_dist : [0., 0.]
+    azimuth : "random" # or "uniform" 
+    # if azimuth is "random", the azimuth will be randomly sampled from [-180, 180]
+    # if azimuth is "uniform", the azimuth will be uniformly sampled from [-180, 180]
+    # e.g. if num_views is 5, azimuth will be sampled from [0, 72, 144, -72, -144]
+    height : [-0.75, 1.6]
+    resolution_x : 1024
+    resolution_y : 1024
+    lens : 35
+    sensor_width : 32
+    num_views : 32
+  -   # cameras from InstantMesh
+    dist : [1.5, 2.2] 
+    first_cam_front : False
+    first_cam_dist : [0., 0.]
+    azimuth : "uniform" # or "uniform" 
+    azimuth_start : 30
+    elevation : [70, 100]
+    resolution_x : 512
+    resolution_y : 512
+    lens : 35
+    sensor_width : 32
+    num_views : 6
+
+render :
+  normals : True
+  depth : True
+  segmentation : True
+  normals_coordinate : "world" # or "camera"

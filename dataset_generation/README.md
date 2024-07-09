@@ -1,0 +1,1 @@
+blenderproc run rendering.py -- --config config/LRM.yaml

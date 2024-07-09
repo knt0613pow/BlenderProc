@@ -1,0 +1,67 @@
+# 3.4 Dataset
+#  For each object in the dataset, we randomly sample 12 camera extrinsics matrices Me pointing
+#  at the center of the object and render 12 views with a raytracing engine
+
+
+# Appendix 
+#  A. Coordinate System & Camera Model
+
+
+# We use a spherical coordinate system to represent camera locations and their relative transformations. 
+  # As shown in Figure 11, assuming the center of the object is the origin of the coordinate system, 
+  # we can use θ, φ, and r to represent the polar angle, azimuth angle, and radius (distance away from the center) respectively. 
+  # For the creation of the dataset, we normalize all assets to be contained inside the XYZ unit cube [−0.5, 0.5]3 . 
+  # Then, we sample camera viewpoints such that θ ∈ [0, π], φ ∈ [0, 2π] uniformly cover the unit sphere, 
+  # and r is sampled uniformly in the interval [1.5, 2.2]. During training, when two images from different viewpoints are sampled, 
+  # let their camera locations be (θ1, φ1, r1) and (θ2, φ2, r2). 
+  # We denote their relative camera transformation as (θ2 − θ1, φ2 − φ1, r2 − r1). 
+  # Since the camera is always pointed at the center of the coordinate system, 
+  # the extrinsics matrices are uniquely defined by the location of the camera in a spherical coordinate system. 
+  # We assume the horizontal field of view of the camera to be 49.1 ◦ , and follow a pinhole camera model. 
+
+
+engine : "CYCLES"
+device : "GPU"
+file_format : "PNG"
+color_mode : "RGBA"
+output_type : "hdf5"
+naming : "center_obj"
+visualize : True
+# remove_obs : True
+
+output_dir : /root/data/LRM
+obj :
+  - 
+    type : "center"
+    normalize_type : "xyz" 
+    normalize_scale : 1.0  # [-0.5, 0.5] cube
+    seg_id : 1
+
+obs_position : #  Only valid in multi-object scenes
+  dist : [1.6, 1.6]
+obj_path :
+  - "/dataset/Objaverse-LGM/hf-objaverse-v1/glbs/000-000/ff6c2c51f7b040279200f8154a376841.glb"
+
+
+camera :
+  - 
+    dist : [1.5, 2.2]
+    first_cam_front : False 
+    # if true, the first camera's z-axis is aligned with the world coordinate x-axis
+    first_cam_dist : [0., 0.]
+    azimuth : "uniform" # or "uniform" 
+    azimuth_start : 30
+    elevation : [70, 100] 
+    # angle with world cooridnate z-axis
+    resolution_x : 512
+    resolution_y : 512
+    lens : 35
+    sensor_width : 32  # in paper, author use 49.1 horizontal field of view 
+    # in this setting, fov is np.arctan(sensor_width/(2*lens))*2 = 0.8575 rad = 49.134 degree
+    num_views : 12
+
+render :
+  normals : True
+  depth : True
+  segmentation : True
+  normals_coordinate : "world" # or "camera"

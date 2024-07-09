@@ -1,0 +1,81 @@
+engine : "CYCLES"
+device : "GPU"
+file_format : "PNG"
+color_mode : "RGBA"
+output_type : "hdf5"
+naming : "center_obj"
+visualize : True
+remove_obs : True
+
+output_dir : /root/data/LRM
+obj :
+  - 
+    type : "center"
+    normalize_type : "xyz" 
+    # "xyz" : normalize x, y, z coordinates
+    # "xy" : normalize x, y coordinates
+    # "xz" : normalize x, z coordinates
+    # "yz" : normalize y, z coordinates
+    # "x" : dont use. if you want to normalize x coordinates, use "xx"
+    normalize_scale : 1.0
+    seg_id : 1
+  # - 
+  #   type : "obs"
+  #   normalize_type : "xyz"
+  #   normalize_scale : 1.0
+  #   seg_id : 2
+  # - 
+  #   type : "obs"
+  #   normalize_type : "xyz"
+  #   normalize_scale : 1.0
+  #   seg_id : 2
+
+obs_position :
+  dist : [1.6, 1.6]
+obj_path :
+  - "/dataset/Objaverse-LGM/hf-objaverse-v1/glbs/000-000/ff6c2c51f7b040279200f8154a376841.glb"
+  # - "/dataset/Objaverse-LGM/hf-objaverse-v1/glbs/000-000/03c1ae5ee27c4b27ae941fdf3d26f775.glb"
+  # - "/dataset/Objaverse-LGM/hf-objaverse-v1/glbs/000-000/2a8d375f2aef42259c6b6814a3ab72a6.glb"
+camera :
+  - 
+    dist : [1.6, 1.6]
+    first_cam_front : True
+    first_cam_dist : [2.5, 2.5]
+    azimuth : "random" # or "uniform" 
+    # if azimuth is "random", the azimuth will be randomly sampled from [-180, 180]
+    # if azimuth is "uniform", the azimuth will be uniformly sampled from [-180, 180]
+    # azimuth_start : 30 # if azimuth is "uniform", the azimuth will be sampled from [azimuth_start, azimuth_start+360]
+    # e.g. if num_views is 5 and azimuth_start is 30,
+    #       azimuth will be sampled from [30, 102, 174, -42, -114]
+    height : [-0.3, 0.3]
+    # height : [-0.75] <- only -0.75 height
+    # height : [-0.75, 1.6] <- uniform sampling in [-0.75, 1.6]
+    # height : [-0.75, 0, 1.6] <- random choice from [-0.75, 0, 1.6]
+    # elevation : [60, 120 ]  <- uniform sampling in[60, 120]
+    # elevation : [60, 90, 120] <- random choice from [60, 90, 120]
+    # elevation : [120] <- only 120 degree
+    # elevation : [60,60,120,120] <- random choice from [60,60,120,120]
+    # please select one of elevation or height!
+    resolution_x : 512
+    resolution_y : 512
+    lens : 35
+    sensor_width : 32
+    num_views : 5
+  - 
+    dist : [3.0, 3.0]
+    first_cam_front : False
+    first_cam_dist : [2.5, 2.5]
+    azimuth : "uniform"
+    azimuth_start : 0
+    elevation : [90]
+    resolution_x : 512
+    resolution_y : 512
+    lens : 35
+    sensor_width : 32
+    num_views: 12
+    
+render :
+  normals : True
+  depth : True
+  segmentation : True
+  normals_coordinate : "world" # or "camera"
