@@ -123,7 +123,7 @@ parser.add_argument("--remove_obs", type=bool, help="if true, there are two type
 parser.add_argument("--obj", type=list, help="object type(center, obs), normalize opt, segment_id")
 parser.add_argument("--obs_position", type=dict, help="")
 
-parser.add_argument("--obj_path", type=list, help="object_path")
+parser.add_argument("--obj_path", action='append', dest='obj_path', help="object_path")
 parser.add_argument("--camera", type=list, help="list of camera option")
 parser.add_argument("--render", type=list, help="normal, depth, seg, rgb")
 
