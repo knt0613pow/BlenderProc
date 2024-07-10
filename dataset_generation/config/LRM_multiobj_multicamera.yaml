@@ -14,7 +14,7 @@ color_mode : "RGBA"
 output_type : "hdf5"
 naming : "center_obj"
 visualize : True
-# remove_obs : True
+remove_obs : True
 
 output_dir : /root/data/LRM
 obj :

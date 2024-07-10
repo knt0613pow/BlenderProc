@@ -1,0 +1,74 @@
+# 3.1. Multi-view Diffusion Model
+#  Data Preparation and Fine-tuning Details.
+
+#Data Preparation and Fine-tuning Details. We prepare
+# the fine-tuning data following the camera distribution of Zero123++. 
+# Specifically, for each 3D model in the LVIS Subset of Objaverse [8], 
+# we render a query image and 6 target images, all in white backgrounds. 
+# The azimuth, elevation and camera distance of the query image is randomly
+# sampled from a pre-defined range. The poses of the 6 target images consist of interleaving absolute elevations of 20◦
+# and −10◦, combined with azimuths relative to the query image that start at 30◦
+# and increase by 60◦ for each pose
+
+
+engine : "CYCLES"
+device : "GPU"
+file_format : "PNG"
+color_mode : "RGBA"
+output_type : "hdf5"
+naming : "center_obj"
+visualize : True
+remove_obs : True
+
+output_dir : /root/data/LRM
+obj :
+  - 
+    type : "center"
+    normalize_type : "xyz" 
+    normalize_scale : 1.0
+    seg_id : 1
+  - 
+    type : "obs"
+    normalize_type : "xyz" 
+    normalize_scale : 1.0
+    seg_id : 2
+  - 
+    type : "obs"
+    normalize_type : "xyz" 
+    normalize_scale : 1.0
+    seg_id : 2
+  - 
+    type : "obs"
+    normalize_type : "xyz" 
+    normalize_scale : 1.0
+    seg_id : 2
+
+
+obs_position : #  Only valid in multi-object scenes
+  dist : [1.6, 1.6]
+obj_path :
+  - "/dataset/Objaverse-LGM/hf-objaverse-v1/glbs/000-000/ff6c2c51f7b040279200f8154a376841.glb"
+  - "/dataset/Objaverse-LGM/hf-objaverse-v1/glbs/000-000/ff6c2c51f7b040279200f8154a376841.glb"
+  - "/dataset/Objaverse-LGM/hf-objaverse-v1/glbs/000-000/ff6c2c51f7b040279200f8154a376841.glb"
+  - "/dataset/Objaverse-LGM/hf-objaverse-v1/glbs/000-000/ff6c2c51f7b040279200f8154a376841.glb"
+
+
+camera :
+  - 
+    dist : [1.5, 2.2] # from zero123 paper
+    first_cam_front : False
+    first_cam_dist : [0., 0.]
+    azimuth : "uniform" # or "uniform" 
+    azimuth_start : 30
+    elevation : [70, 100]
+    resolution_x : 512
+    resolution_y : 512
+    lens : 35
+    sensor_width : 32
+    num_views : 6
+
+render :
+  normals : True
+  depth : True
+  segmentation : True
+  normals_coordinate : "world" # or "camera"
