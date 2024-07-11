@@ -20,7 +20,7 @@ naming : "center_obj"
 visualize : True
 remove_obs : True
 
-output_dir : /root/data/LRM
+output_dir : /root/data/InstantMesh_multiobject
 obj :
   - 
     type : "center"
@@ -30,42 +30,43 @@ obj :
   - 
     type : "obs"
     normalize_type : "xyz" 
-    normalize_scale : 1.0
+    normalize_scale : 0.5
     seg_id : 2
   - 
     type : "obs"
     normalize_type : "xyz" 
-    normalize_scale : 1.0
+    normalize_scale : 0.5
     seg_id : 2
   - 
     type : "obs"
     normalize_type : "xyz" 
-    normalize_scale : 1.0
+    normalize_scale : 0.5
     seg_id : 2
 
 
 obs_position : #  Only valid in multi-object scenes
-  dist : [1.6, 1.6]
+  dist : [1.0, 1.0]
 obj_path :
-  - "/dataset/Objaverse-LGM/hf-objaverse-v1/glbs/000-000/ff6c2c51f7b040279200f8154a376841.glb"
-  - "/dataset/Objaverse-LGM/hf-objaverse-v1/glbs/000-000/ff6c2c51f7b040279200f8154a376841.glb"
-  - "/dataset/Objaverse-LGM/hf-objaverse-v1/glbs/000-000/ff6c2c51f7b040279200f8154a376841.glb"
-  - "/dataset/Objaverse-LGM/hf-objaverse-v1/glbs/000-000/ff6c2c51f7b040279200f8154a376841.glb"
+  - "/dataset/Objaverse-LGM/hf-objaverse-v1/glbs/000-082/eca838f2af7b4969813747fbc64f207f.glb"
+  - "/dataset/Objaverse-LGM/hf-objaverse-v1/glbs/000-009/a9104709cdb345e2bd6ddf846236d34d.glb"
+  - "/dataset/Objaverse-LGM/hf-objaverse-v1/glbs/000-009/a9b666aaad2a4c61a416d2c57f124c9d.glb"
+  - "/dataset/Objaverse-LGM/hf-objaverse-v1/glbs/000-009/adda7a776e1848eeaf3bd1052bc0cce6.glb"
+
 
 
 camera :
   - 
-    dist : [1.5, 2.2] # from zero123 paper
+    dist : [1.5, 2.2] 
     first_cam_front : False
     first_cam_dist : [0., 0.]
-    azimuth : "uniform" # or "uniform" 
+    azimuth : "random"
     azimuth_start : 30
-    elevation : [70, 100]
+    elevation : [80, 110]
     resolution_x : 512
     resolution_y : 512
     lens : 35
     sensor_width : 32
-    num_views : 6
+    num_views : 32
 
 render :
   normals : True

@@ -112,7 +112,6 @@ parser.add_argument("--device", type=str, help="device type")
 parser.add_argument("--file_format", type=str, help="file_format")
 
 parser.add_argument("--color_mode", type=str, help="")
-# parser.add_argument("--camera_repulsion", type=bool, help="camera_repulsion")
 parser.add_argument("--output_type", type=str, help="", choices=["hdf5", "image"])
 
 parser.add_argument("--naming", type=str, help="if you choice 'nth_obj', please check naming_Idx", choices=["all", "center_obj", "nth_obj"])
@@ -126,7 +125,8 @@ parser.add_argument("--obs_position", type=dict, help="")
 parser.add_argument("--obj_path", action='append', dest='obj_path', help="object_path")
 parser.add_argument("--camera", type=list, help="list of camera option")
 parser.add_argument("--render", type=list, help="normal, depth, seg, rgb")
-
+parser.add_argument("--gpu_id", type=int, help="gpu_id")
+parser.add_argument("--cpu_thread", type=int, help="cpu_thread")
 args = parser.parse_args()
 if args.config is not None :
     with open(args.config, 'r') as f:
@@ -149,8 +149,8 @@ render = scene.render
 render.engine = args.engine
 render.image_settings.file_format = args.file_format
 render.image_settings.color_mode = args.color_mode
-render.resolution_x = 512  #TODO
-render.resolution_y = 512  #TODO
+render.resolution_x = 512 
+render.resolution_y = 512 
 render.resolution_percentage = 100 
 
 scene.cycles.device = args.device
@@ -163,6 +163,8 @@ scene.cycles.filter_width = 0.01
 scene.cycles.use_denoising = True
 scene.render.film_transparent = True
 
+bproc.renderer.set_render_devices(use_only_cpu=False, desired_gpu_device_type=None, desired_gpu_ids=args.gpu_id)
+RendererUtility.set_cpu_threads(args.cpu_thread)
 
 def add_lighting() -> None:
     # add a new light
@@ -194,7 +196,7 @@ def normalize_meshobj(meshobjs, scale :int = 1 ,translation = None, normalize_ty
     scale = 1 / max(getattr(bbox_max, normalize_type) - getattr(bbox_min, normalize_type))
     root_meshobj = list(set([find_root_meshobj(obj) for obj in meshobjs]))[0]
     scale_vec = Vector((scale, scale, scale)) 
-    root_meshobj.set_scale(scale_vec)
+    root_meshobj.set_scale(scale * root_meshobj.get_scale( ))
     bbox_min, bbox_max = scene_bbox_meshobj(meshobjs)
     offset = -(bbox_min + bbox_max) / 2
     
@@ -369,8 +371,9 @@ def write_hdf5(output_dir, rendered_data, file_name = "data"):
         for k, v in rendered_data.items():
             array = to_ndarray(v)
             if array is not None:
+                if array.dtype in [np.int16, np.int32, np.int64]:  # possible integer value is rgb or segmentation 
+                    array = array.astype(np.int8)
                 _WriterUtility.write_to_hdf_file(f, k, array)
-    
     return
 
 ############# END hdf IO #####################
@@ -389,7 +392,7 @@ def rendering(args) :
     
     empty = bpy.data.objects.new("Empty", None)
     scene.collection.objects.link(empty)
-    RendererUtility.set_cpu_threads(36)
+    
     setup_render(args.render)
     
     num_obj = len(args.obj)
@@ -479,9 +482,13 @@ def rendering(args) :
             print(bproc.camera.add_camera_pose(pose))
         
         setup_normal_render()
+        
+        time2 = time.time()
+        
+        
         data = bproc.renderer.render(verbose=True)
         
-        
+        time3 = time.time()
         
         if args.remove_obs :
             for obs in obstacles:
@@ -491,7 +498,7 @@ def rendering(args) :
             single_data = {key+"_single" : value for key, value in single_data.items()}
             data = {**data, **single_data}
             
-        
+        time4 = time.time()
         ####### add camera paramter ##############
         K = bproc.camera.get_intrinsics_as_K_matrix()
         K = [K] * cam_config['num_views']
@@ -514,20 +521,36 @@ def rendering(args) :
         rendered_data = {k :rendered_data.get(k, []) + data.get(k, [])  for k in union_key}
         bproc.utility.reset_keyframes()
         
-        
-    visualize(rendered_data, output_dir)
-    write_hdf5(output_dir, rendered_data)
+    time5 = time.time()
     
+    # visualize(rendered_data, output_dir)
+    time6 = time.time()
+    
+    write_hdf5(output_dir, rendered_data)
+    time7 = time.time()
+
     with open(os.path.join(output_dir, "description.txt"), "w") as f:
         f.write("Obstacle\n")
-        for obsi  in obstacle_idx:
+        for idx, obsi  in enumerate(obstacle_idx):
             if obsi is None:
                 continue
-            obs_file = args.obj_path[obsi]
+            obs_file = args.obj_path[idx]
             f.write(f"{obs_file}\n")
         f.write("Center\n")
         center_file = args.obj_path[center_obj_idx]
         f.write(f"{center_file}\n")
+    time8 = time.time()
+    
+    print(f"load : {time2 - time1:.5f} sec")
+    print(f"render : {time3 - time2:.5f} sec")
+    print(f"remove and render: {time4 - time3:.5f} sec")
+    print(f"get camera param : {time5 - time4:.5f} sec")
+    print(f"visualize : {time6 - time5:.5f} sec")
+    print(f"write hdf5 : {time7 - time6:.5f} sec")
+    print(f"write description : {time8 - time7:.5f} sec")
     
 if __name__ == "__main__":
+    start = time.time()
     rendering(args)
+    end = time.time()
+    print(f"{end - start:.5f} sec")
