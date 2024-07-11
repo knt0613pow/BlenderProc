@@ -19,8 +19,9 @@ output_type : "hdf5"
 naming : "center_obj"
 visualize : True
 remove_obs : True
-
-output_dir : /root/data/InstantMesh_multiobject
+gpu_id : 0
+cpu_thread : 16
+output_dir : /root/data/xx
 obj :
   - 
     type : "center"
