@@ -521,14 +521,10 @@ def rendering(args) :
         rendered_data = {k :rendered_data.get(k, []) + data.get(k, [])  for k in union_key}
         bproc.utility.reset_keyframes()
         
-    time5 = time.time()
-    
-    # visualize(rendered_data, output_dir)
-    time6 = time.time()
-    
-    write_hdf5(output_dir, rendered_data)
-    time7 = time.time()
 
+    # visualize(rendered_data, output_dir)
+    write_hdf5(output_dir, rendered_data)
+    
     with open(os.path.join(output_dir, "description.txt"), "w") as f:
         f.write("Obstacle\n")
         for idx, obsi  in enumerate(obstacle_idx):
@@ -539,18 +535,6 @@ def rendering(args) :
         f.write("Center\n")
         center_file = args.obj_path[center_obj_idx]
         f.write(f"{center_file}\n")
-    time8 = time.time()
-    
-    print(f"load : {time2 - time1:.5f} sec")
-    print(f"render : {time3 - time2:.5f} sec")
-    print(f"remove and render: {time4 - time3:.5f} sec")
-    print(f"get camera param : {time5 - time4:.5f} sec")
-    print(f"visualize : {time6 - time5:.5f} sec")
-    print(f"write hdf5 : {time7 - time6:.5f} sec")
-    print(f"write description : {time8 - time7:.5f} sec")
     
 if __name__ == "__main__":
-    start = time.time()
     rendering(args)
-    end = time.time()
-    print(f"{end - start:.5f} sec")
